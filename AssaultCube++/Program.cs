@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Text;
 using System.Threading;
 
 namespace AssaultCube__
@@ -29,19 +28,21 @@ namespace AssaultCube__
             //IntPtr ptr = (IntPtr)0x02ACA4E8;
             //long longValue = Marshal.ReadInt64(ptr);
 
-            
+            EntityBasecs entity = new EntityBasecs();
 
             while (true)
             {
-                int bytesRead = 0;
-                byte[] buffer = new byte[4];
-                ReadProcessMemory((int)pHandleOverlay, 0x02ACA4E8, buffer, buffer.Length, out bytesRead);
+                //int bytesRead = 0;
+                //byte[] buffer = new byte[4];
+                //ReadProcessMemory((int)pHandleOverlay, 0x02ACA4E8, buffer, buffer.Length, out bytesRead);
 
-                int health = BitConverter.ToInt32(buffer, 0);
+                //int health = BitConverter.ToInt32(buffer, 0);
 
-                logV("Health", health);
+                //logV("Health", health);
 
+                int health = entity.localHealth;
                 Thread.Sleep(500);
+                entity.localHealth = 1000;
             }
 
             //Console.WriteLine(longValue);
@@ -85,6 +86,29 @@ namespace AssaultCube__
             return OpenProcess(PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_VM_OPERATION, true, GetProcessFromId(processid).Id);
         }
 
+        public static int ReadInt(int adress)
+        {
+            int bytesRead = 0;
+            byte[] buffer = new byte[4];
+            ReadProcessMemory((int)pHandleOverlay, adress, buffer, buffer.Length, out bytesRead);
+
+            int num = BitConverter.ToInt32(buffer, 0);
+            logV("Health", num);
+            return num;
+        }
+
+        public static void WriteInt(int adress, int value)
+        {
+            int bytesRead = 0;
+            var toWrite = new byte[] { (byte)value };
+            int s = 0;
+            bool sucess = WriteProcessMemory((int)pHandleOverlay, adress, toWrite, toWrite.Length, out bytesRead);
+            if (sucess)
+                s = 1;
+            logV("Write Sucess", s);
+
+        }
+
 
         [DllImport("kernel32.dll")]
         public static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
@@ -97,6 +121,11 @@ namespace AssaultCube__
 
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern bool ReadProcessMemory(int hProcess, int lpBaseAddress, [Out] byte[] lpBuffer, int dwSize,
+    out int lpNumberOfBytesRead);
+
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern bool WriteProcessMemory(int hProcess, int lpBaseAddress, byte[] lpBuffer, int dwSize,
     out int lpNumberOfBytesRead);
 
     }
