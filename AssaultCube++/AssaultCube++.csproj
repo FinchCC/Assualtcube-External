@@ -36,7 +36,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EntityBasecs.cs" />
+    <Compile Include="EntityList.cs" />
+    <Compile Include="LocalEntityBase.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>

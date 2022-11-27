@@ -28,7 +28,7 @@ namespace AssaultCube__
             //IntPtr ptr = (IntPtr)0x02ACA4E8;
             //long longValue = Marshal.ReadInt64(ptr);
 
-            EntityBasecs entity = new EntityBasecs();
+            LocalEntityBase entity = new LocalEntityBase();
 
             while (true)
             {
@@ -42,7 +42,7 @@ namespace AssaultCube__
 
                 int health = entity.localHealth;
                 Thread.Sleep(500);
-                entity.localHealth = 1000;
+                entity.localHealth = 500;
             }
 
             //Console.WriteLine(longValue);

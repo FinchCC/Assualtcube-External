@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace AssaultCube__
 {    
-    public class EntityBasecs
+    public class LocalEntityBase
     { 
         static int baseAddress = 0x50F4F4;
         public int entityPointer;
 
         public int localHealth { get { return getLocalheath(); } set { setLocalhealth(value); } }
-        public EntityBasecs()
+        public LocalEntityBase()
         {
             entityPointer = getEntity();        
         }
