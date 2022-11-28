@@ -6,14 +6,28 @@ using System.Threading.Tasks;
 
 namespace AssaultCube__
 {    
+    public struct Coordinates
+    {
+        public float x { get; set; }
+        public float y { get; set; }
+        public float z { get; set; }
+
+        public string getCords()
+        {
+            return "x: " + x.ToString() + ", y: " + y.ToString() + ", z: " + z.ToString();
+        }
+    }
     public class LocalEntityBase
     { 
         static int baseAddress = 0x50F4F4;
         public int entityPointer;
+        public static Memory memory;
 
         public int localHealth { get { return getLocalheath(); } set { setLocalhealth(value); } }
+        public Coordinates localPos { get { return getPos(); } }
         public LocalEntityBase()
         {
+            memory = new Memory();
             entityPointer = getEntity();        
         }
 
@@ -21,6 +35,13 @@ namespace AssaultCube__
         {
             int health = Program.ReadInt(entityPointer + 0xF8);
             return health;
+        }
+
+        public Coordinates getPos()
+        {
+            Coordinates pos = new Coordinates { x = Program.ReadFloat(entityPointer + memory.x), 
+                y = Program.ReadFloat(entityPointer + memory.y), z = Program.ReadFloat(entityPointer + memory.z) };
+            return pos;
         }
 
         public void setLocalhealth(int ammount)

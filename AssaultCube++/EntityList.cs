@@ -26,15 +26,21 @@ namespace AssaultCube__
 
     }
 
-    public static class Memory
+    public class Memory
     {
-        static int Health { get; }
-        static int x { get; }
-        static int y { get; }
-        static int z { get; }
+        public int Health { get; private set; }
+        public int x { get; private set; }
+        public int y { get; private set; }
+        public int z { get; private set; }
+        public int aimx { get; private set; }
+        public int aimy { get; private set; }
         public Memory()
         {
-            Heal
+            Health = 0xF8;
+            x = 0x38;
+            y = 0x3C;
+            z = 0x34;
+
         }
     }
 }

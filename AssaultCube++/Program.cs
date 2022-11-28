@@ -43,6 +43,8 @@ namespace AssaultCube__
                 int health = entity.localHealth;
                 Thread.Sleep(500);
                 entity.localHealth = 500;
+                Coordinates cor = entity.getPos();
+                Console.WriteLine(cor.getCords());
             }
 
             //Console.WriteLine(longValue);
@@ -94,6 +96,16 @@ namespace AssaultCube__
 
             int num = BitConverter.ToInt32(buffer, 0);
             logV("Health", num);
+            return num;
+        }
+        public static float ReadFloat(int adress)
+        {
+            int bytesRead = 0;
+            byte[] buffer = new byte[sizeof(float)];
+            ReadProcessMemory((int)pHandleOverlay, adress, buffer, buffer.Length, out bytesRead);
+
+            float num = BitConverter.ToSingle(buffer, 0);
+            //logV("Float", Convert.ToInt32(num));
             return num;
         }
 
