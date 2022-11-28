@@ -29,6 +29,7 @@ namespace AssaultCube__
             //long longValue = Marshal.ReadInt64(ptr);
 
             LocalEntityBase entity = new LocalEntityBase();
+            EntityList entities = new EntityList();
 
             while (true)
             {
@@ -40,11 +41,13 @@ namespace AssaultCube__
 
                 //logV("Health", health);
 
-                int health = entity.localHealth;
-                Thread.Sleep(500);
-                entity.localHealth = 500;
-                Coordinates cor = entity.getPos();
-                Console.WriteLine(cor.getCords());
+                //int health = entity.localHealth;
+                //Thread.Sleep(5000);
+                //entity.localHealth = 500;
+                //vector3 cor = entity.getPos();
+                //Console.WriteLine(cor.getCords());
+                entities.UpdateEnteties();
+                Console.ReadLine();
             }
 
             //Console.WriteLine(longValue);
@@ -95,7 +98,7 @@ namespace AssaultCube__
             ReadProcessMemory((int)pHandleOverlay, adress, buffer, buffer.Length, out bytesRead);
 
             int num = BitConverter.ToInt32(buffer, 0);
-            logV("Health", num);
+            //logV("Health", num);
             return num;
         }
         public static float ReadFloat(int adress)

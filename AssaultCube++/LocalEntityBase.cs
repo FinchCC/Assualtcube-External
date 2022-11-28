@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AssaultCube__
 {    
-    public struct Coordinates
+    public struct vector3
     {
         public float x { get; set; }
         public float y { get; set; }
@@ -24,7 +24,7 @@ namespace AssaultCube__
         public static Memory memory;
 
         public int localHealth { get { return getLocalheath(); } set { setLocalhealth(value); } }
-        public Coordinates localPos { get { return getPos(); } }
+        public vector3 localPos { get { return getPos(); } }
         public LocalEntityBase()
         {
             memory = new Memory();
@@ -37,9 +37,9 @@ namespace AssaultCube__
             return health;
         }
 
-        public Coordinates getPos()
+        public vector3 getPos()
         {
-            Coordinates pos = new Coordinates { x = Program.ReadFloat(entityPointer + memory.x), 
+            vector3 pos = new vector3 { x = Program.ReadFloat(entityPointer + memory.x), 
                 y = Program.ReadFloat(entityPointer + memory.y), z = Program.ReadFloat(entityPointer + memory.z) };
             return pos;
         }
