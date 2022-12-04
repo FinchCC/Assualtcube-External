@@ -10,7 +10,9 @@ using System.Windows.Forms;
 
 namespace AssaultCube__
 {
-    public class Program
+
+
+    public partial class Program
     {
 
         const int PROCESS_VM_READ = 0x0010;
@@ -24,8 +26,11 @@ namespace AssaultCube__
         public static EntityList entities;
 
         public static LocalEntityBase entity;
+        public static FormHandler frmHandler;
+
         public static void Main()
         {
+            frmHandler = new FormHandler();
             Control.CheckForIllegalCrossThreadCalls = false;
             gamehandle = GetWindowId(gamename);
             logV("gamehandle", gamehandle);
