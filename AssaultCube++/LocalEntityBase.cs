@@ -41,6 +41,7 @@ namespace AssaultCube__
         public float heady;
 
         public vector3 localPos { get { return getPos(); } }
+        public Matrix4x4 viewMatrix { get { return Program.readViewMatrix(memory.viewMatrix); } }
         public LocalEntityBase()
         {
             memory = new Memory();

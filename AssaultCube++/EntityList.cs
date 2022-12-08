@@ -148,6 +148,8 @@ namespace AssaultCube__
         public int headz { get; private set; }
         public int heady { get; private set; }
 
+        public int viewMatrix { get; private set; }
+
         public Memory()
         {
             Health = 0xF8;
@@ -161,6 +163,7 @@ namespace AssaultCube__
             headx = 0x4;
             heady = 0x8;
             headz = 0xc;
+            viewMatrix = 0x501AE8;
         }
     }
 }

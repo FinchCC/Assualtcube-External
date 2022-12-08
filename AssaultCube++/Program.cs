@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
+using System.Numerics;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -47,6 +50,7 @@ namespace AssaultCube__
             thread.Start();
             while (true)
             {
+                Console.WriteLine(readViewMatrix(LocalEntityBase.memory.viewMatrix).ToString());
                 //int bytesRead = 0;
                 //byte[] buffer = new byte[4];
                 //ReadProcessMemory((int)pHandleOverlay, 0x02ACA4E8, buffer, buffer.Length, out bytesRead);
@@ -79,6 +83,7 @@ namespace AssaultCube__
             {
                 entities.UpdateEnteties();
                 entity.updateEnt();
+
 
                 if(GetAsyncKeyState(Keys.Q)<0)
                 {
@@ -164,6 +169,29 @@ namespace AssaultCube__
             int num = BitConverter.ToInt32(buffer, 0);
             //logV("Health", num);
             return num;
+        }
+
+        public static Matrix4x4 readViewMatrix(int adress)
+        {
+            byte[] buffer = new byte[sizeof(float) * 16];
+            int bytesRead = 0;
+
+            ReadProcessMemory((int)pHandleOverlay, adress, buffer, buffer.Length, out bytesRead);
+
+            float[] matrixlist = new float[sizeof(float) * 16];
+            for (int i = 0; i < 16; i++)
+            {
+                float f = BitConverter.ToSingle(buffer, i);
+                matrixlist[i] = f;
+            }
+
+            Matrix4x4 matrix = new Matrix4x4(matrixlist[0], matrixlist[1], matrixlist[2], matrixlist[3],
+                matrixlist[4], matrixlist[5], matrixlist[6], matrixlist[7], matrixlist[8], matrixlist[9],
+                matrixlist[10], matrixlist[11], matrixlist[12], matrixlist[13], matrixlist[14],
+                matrixlist[15]);
+
+            return matrix;
+
         }
         public static float ReadFloat(int adress)
         {
