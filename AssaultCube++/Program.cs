@@ -33,7 +33,7 @@ namespace AssaultCube__
 
         public static void Main()
         {
-            frmHandler = new FormHandler();
+            
             Control.CheckForIllegalCrossThreadCalls = false;
             gamehandle = GetWindowId(gamename);
             logV("gamehandle", gamehandle);
@@ -44,7 +44,8 @@ namespace AssaultCube__
             //long longValue = Marshal.ReadInt64(ptr);
 
             entity = new LocalEntityBase();
-             entities = new EntityList(entity);
+            entities = new EntityList(entity);
+            frmHandler = new FormHandler(entity, entities);
 
             Thread thread = new Thread(main) { IsBackground = true };
             thread.Start();
