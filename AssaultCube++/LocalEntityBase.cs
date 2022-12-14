@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using static AssaultCube__.EntityList;
 
 namespace AssaultCube__
@@ -40,12 +42,31 @@ namespace AssaultCube__
         public float headz;
         public float heady;
 
+        public ScreenSize screensize { get { return getRect(); } }
         public vector3 localPos { get { return getPos(); } }
         public Matrix4x4 viewMatrix { get { return Program.readViewMatrix(memory.viewMatrix); } }
         public LocalEntityBase()
         {
             memory = new Memory();
             entityPointer = getEntity();        
+        }
+        
+        public struct ScreenSize
+        {
+            public int width { get; set; }
+            public int height { get; set; }
+        }
+
+        public ScreenSize getRect()
+        {
+            int width = Program.ReadInt(0x00510C94);
+            int height = Program.ReadInt(0x00510C94 + 0x04);
+
+            var s = new ScreenSize();
+            s.width = width;
+            s.height = height;
+
+            return s;
         }
 
         public void updateEnt()
@@ -129,6 +150,11 @@ namespace AssaultCube__
         {
             int tempaddr = Program.ReadInt(baseAddress);
             return tempaddr;
+        }
+
+        public Point WorldToScreen(Matrix4x4 viewmatrix, vector3 position)
+        {
+
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]

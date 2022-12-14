@@ -186,10 +186,26 @@ namespace AssaultCube__
                 matrixlist[i] = f;
             }
 
-            Matrix4x4 matrix = new Matrix4x4(matrixlist[0], matrixlist[1], matrixlist[2], matrixlist[3],
-                matrixlist[4], matrixlist[5], matrixlist[6], matrixlist[7], matrixlist[8], matrixlist[9],
-                matrixlist[10], matrixlist[11], matrixlist[12], matrixlist[13], matrixlist[14],
-                matrixlist[15]);
+            Matrix4x4 matrix = new Matrix4x4();
+            matrix.M11 = matrixlist[0];
+            matrix.M12 = matrixlist[1];
+            matrix.M13 = matrixlist[2];
+            matrix.M14 = matrixlist[3];
+
+            matrix.M21 = matrixlist[4];
+            matrix.M22 = matrixlist[5];
+            matrix.M23 = matrixlist[6];
+            matrix.M24 = matrixlist[7];
+
+            matrix.M31 = matrixlist[8];
+            matrix.M32 = matrixlist[9];
+            matrix.M33 = matrixlist[10];
+            matrix.M34 = matrixlist[11];
+
+            matrix.M41 = matrixlist[12];
+            matrix.M42 = matrixlist[13];
+            matrix.M43 = matrixlist[14];
+            matrix.M44 = matrixlist[15];
 
             return matrix;
 
