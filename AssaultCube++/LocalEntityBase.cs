@@ -152,9 +152,37 @@ namespace AssaultCube__
             return tempaddr;
         }
 
-        public Point WorldToScreen(Matrix4x4 viewmatrix, vector3 position)
+        public Point WorldToScreen(vector3 position, int height, int width)
         {
 
+            var viewMatrix = viewmatrix;
+
+            int Width = width;
+            int Height = height;
+
+            float screenW = (viewMatrix.M14 * position.x) + (viewMatrix.M24 * position.y) +
+                   (viewMatrix.M34 * position.z) + viewMatrix.M44;
+
+            if (screenW < 0.001f)
+            {
+                float screenX = (viewMatrix.M11 * position.x) + (viewMatrix.M21 * position.x) +
+                    (viewMatrix.M31 + position.z) + viewMatrix.M41;
+
+                float screenY = (viewMatrix.M12 * position.x) + (viewMatrix.M22 * position.x) +
+                    (viewMatrix.M32 + position.z) + viewMatrix.M42;
+
+                float camX = width / 2f;
+                float camY = height / 2f;
+
+                float X = camX + (camX * screenX / screenW);
+                float Y = camY + (camY * screenY / screenW);
+
+                return new Point((int)X, (int)Y);
+            }
+            else
+            {
+                return new Point((int)-99, (int)-99);
+            }
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]

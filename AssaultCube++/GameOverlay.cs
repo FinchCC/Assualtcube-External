@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -105,6 +106,7 @@ namespace AssaultCube__
             // 
             this.ClientSize = new System.Drawing.Size(284, 261);
             this.Name = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
             this.ResumeLayout(false);
 
@@ -115,6 +117,19 @@ namespace AssaultCube__
             if (entities.entities.Count != 0)
                 return;
 
+
+            foreach (var ent in entities.entities)
+            {
+                Point feet = player.WorldToScreen(new vector3(ent.x, ent.y, ent.z), this.Height, this.Width);
+                Point head = player.WorldToScreen(new vector3(ent.headx, ent.heady, ent.headz), this.Height, this.Width);
+
+            }
+
+
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
 
         }
     }
