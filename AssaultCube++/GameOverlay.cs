@@ -120,8 +120,9 @@ namespace AssaultCube__
 
             foreach (var ent in entities.entities)
             {
-                Point feet = player.WorldToScreen(new vector3(ent.x, ent.y, ent.z), this.Height, this.Width);
-                Point head = player.WorldToScreen(new vector3(ent.headx, ent.heady, ent.headz), this.Height, this.Width);
+                //var feet3 = new vector3()
+                Point feet = player.WorldToScreen(new vector3({ x = ent.x, y = ent.y, z = ent.z }), this.Height, this.Width);
+                Point head = player.WorldToScreen(new vector3({ x = ent.headx, y = ent.heady, z = ent.headz } ), this.Height, this.Width);
 
             }
 
