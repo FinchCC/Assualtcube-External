@@ -24,6 +24,8 @@ namespace AssaultCube__
             FormHandler.form = this;
             FormHandler.formThread = new Thread(Main) { IsBackground = true };
             FormHandler.formThread.Start();
+
+            Console.WriteLine("22");
         }
 
         public IntPtr id;
@@ -41,6 +43,9 @@ namespace AssaultCube__
 
             int initialStyle = (int)GetWindowLongPtr(this.Handle, -20);
             SetWindowLong32(this.Handle, -20, initialStyle | 0x80000 | 0x20);
+
+            f = new Font("Times New Roman", 12.0f);
+            b = new SolidBrush(Color.Orange);
 
             while (true)
             {
@@ -112,18 +117,24 @@ namespace AssaultCube__
 
         }
 
+        private Font f;
+        private SolidBrush b;
+
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
             if (entities.entities.Count != 0)
                 return;
 
-
+            int h = this.Height;
+            int w = this.Width;
             foreach (var ent in entities.entities)
             {
-                //var feet3 = new vector3()
-                Point feet = player.WorldToScreen(new vector3({ x = ent.x, y = ent.y, z = ent.z }), this.Height, this.Width);
-                Point head = player.WorldToScreen(new vector3({ x = ent.headx, y = ent.heady, z = ent.headz } ), this.Height, this.Width);
+                vector3 feet3 = new vector3 { x = ent.x, y = ent.y, z = ent.z }; 
+                Point feet = player.WorldToScreen(feet3, h, w);
+                vector3 head3 = new vector3 { x = ent.headx, y = ent.heady, z = ent.headz }; 
+                Point head = player.WorldToScreen(head3, h, w);
 
+                e.Graphics.DrawString(ent.Name, f, b, head);
             }
 
 

@@ -155,21 +155,21 @@ namespace AssaultCube__
         public Point WorldToScreen(vector3 position, int height, int width)
         {
 
-            var viewMatrix = viewmatrix;
+            var vMatrix = viewMatrix;
 
             int Width = width;
             int Height = height;
 
-            float screenW = (viewMatrix.M14 * position.x) + (viewMatrix.M24 * position.y) +
-                   (viewMatrix.M34 * position.z) + viewMatrix.M44;
+            float screenW = (vMatrix.M14 * position.x) + (vMatrix.M24 * position.y) +
+                   (vMatrix.M34 * position.z) + vMatrix.M44;
 
             if (screenW < 0.001f)
             {
-                float screenX = (viewMatrix.M11 * position.x) + (viewMatrix.M21 * position.x) +
-                    (viewMatrix.M31 + position.z) + viewMatrix.M41;
+                float screenX = (vMatrix.M11 * position.x) + (vMatrix.M21 * position.x) +
+                    (vMatrix.M31 + position.z) + vMatrix.M41;
 
-                float screenY = (viewMatrix.M12 * position.x) + (viewMatrix.M22 * position.x) +
-                    (viewMatrix.M32 + position.z) + viewMatrix.M42;
+                float screenY = (vMatrix.M12 * position.x) + (vMatrix.M22 * position.x) +
+                    (vMatrix.M32 + position.z) + vMatrix.M42;
 
                 float camX = width / 2f;
                 float camY = height / 2f;
