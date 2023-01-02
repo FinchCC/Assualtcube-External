@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Messaging;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using static AssaultCube__.EntityList;
@@ -163,7 +164,7 @@ namespace AssaultCube__
             headx = 0x4;
             heady = 0x8;
             headz = 0xc;
-            viewMatrix = 0x501AE8;
+            viewMatrix = 0x00501AE8;
         }
     }
 }

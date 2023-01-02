@@ -15,16 +15,26 @@ namespace AssaultCube__
     {
         public static Form1 form;
         public static Thread formThread;
+        public LocalEntityBase p;
+        public EntityList ents;
         public FormHandler(LocalEntityBase player, EntityList entities)
         {
-            createForm(player, entities);
+            //formThread = new Thread(createForm) { IsBackground = true };
+            //formThread.Start();
+            //createForm();
+            //formThread = new Thread(() => new Form1.ShowDialog()).Start();
+            p = player;
+            ents = entities;
+            formThread = new Thread(new ThreadStart(createForm));
+            formThread.Start();
         }
 
-        private void createForm(LocalEntityBase player, EntityList ent)
+        private void createForm()
         {
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1(player, ent));
+            Application.Run(new Form1(p, ents));
         }
     }
     

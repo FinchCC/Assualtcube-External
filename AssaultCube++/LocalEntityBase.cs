@@ -28,6 +28,7 @@ namespace AssaultCube__
         static int baseAddress = 0x50F4F4;
         public int entityPointer;
         public static Memory memory;
+        public int baseDll = 0x400000;
 
         public int Health;
         public float x;
@@ -44,7 +45,7 @@ namespace AssaultCube__
 
         public ScreenSize screensize { get { return getRect(); } }
         public vector3 localPos { get { return getPos(); } }
-        public Matrix4x4 viewMatrix { get { return Program.readViewMatrix(memory.viewMatrix); } }
+        public Matrix4x4 viewMatrix { get { return readMatrix(); } }
         public LocalEntityBase()
         {
             memory = new Memory();
@@ -67,6 +68,11 @@ namespace AssaultCube__
             s.height = height;
 
             return s;
+        }
+
+        public Matrix4x4 readMatrix()
+        {
+            return Program.readViewMatrix(LocalEntityBase.memory.viewMatrix);
         }
 
         public void updateEnt()
@@ -155,34 +161,55 @@ namespace AssaultCube__
         public Point WorldToScreen(vector3 position, int height, int width)
         {
 
-            var vMatrix = viewMatrix;
+            var m = viewMatrix;
 
-            int Width = width;
-            int Height = height;
+            //int Width = width;
+            //int Height = height;
 
-            float screenW = (vMatrix.M14 * position.x) + (vMatrix.M24 * position.y) +
-                   (vMatrix.M34 * position.z) + vMatrix.M44;
+            //float screenW = (vMatrix.M14 * position.x) + (vMatrix.M24 * position.y) +
+            //       (vMatrix.M34 * position.z) + vMatrix.M44;
 
-            if (screenW < 0.001f)
-            {
-                float screenX = (vMatrix.M11 * position.x) + (vMatrix.M21 * position.x) +
-                    (vMatrix.M31 + position.z) + vMatrix.M41;
+            //if (screenW > 0.001f)
+            //{
+            //    float screenX = (vMatrix.M11 * position.x) + (vMatrix.M21 * position.x) +
+            //        (vMatrix.M31 + position.z) + vMatrix.M41;
 
-                float screenY = (vMatrix.M12 * position.x) + (vMatrix.M22 * position.x) +
-                    (vMatrix.M32 + position.z) + vMatrix.M42;
+            //    float screenY = (vMatrix.M12 * position.x) + (vMatrix.M22 * position.x) +
+            //        (vMatrix.M32 + position.z) + vMatrix.M42;
 
-                float camX = width / 2f;
-                float camY = height / 2f;
+            //    float camX = width / 2f;
+            //    float camY = height / 2f;
 
-                float X = camX + (camX * screenX / screenW);
-                float Y = camY + (camY * screenY / screenW);
+            //    float X = camX + (camX * screenX / screenW);
+            //    float Y = camY - (camY * screenY / screenW);
 
-                return new Point((int)X, (int)Y);
-            }
-            else
-            {
-                return new Point((int)-99, (int)-99);
-            }
+            //    return new Point((int)X, (int)Y);
+            //}
+            //else
+            //{
+            //    return new Point((int)-99, (int)-99);
+            //}
+
+
+
+            float screenX = (m.M11 * position.x) + (m.M21 * position.y) + (m.M31 * position.z) + m.M41;
+            float screenY = (m.M12 * position.x) + (m.M22 * position.y) + (m.M32 * position.z) + m.M42;
+            float screenW = (m.M14 * position.x) + (m.M24 * position.y) + (m.M34 * position.z) + m.M44;
+
+            //camera position (eye level/middle of screen)
+            float camX = width / 2f;
+            float camY = height / 2f;
+
+            //convert to homogeneous position
+            float x = camX + (camX * screenX / screenW);
+            float y = camY - (camY * screenY / screenW);
+
+            Point screenPos = new Point((int)x, (int)y);
+
+            //check if object is behind camera / off screen (not visible)
+            //w = z where z is relative to the camera 
+
+            return screenPos;
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]

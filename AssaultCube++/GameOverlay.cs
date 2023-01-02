@@ -16,16 +16,18 @@ namespace AssaultCube__
     {
         LocalEntityBase player;
         EntityList entities;
+        Thread formThread;
+        Form1 f1;
         public Form1(LocalEntityBase player, EntityList ent)
         {
             this.player = player;
             this.entities = ent;
             CheckForIllegalCrossThreadCalls = false;
             FormHandler.form = this;
-            FormHandler.formThread = new Thread(Main) { IsBackground = true };
-            FormHandler.formThread.Start();
-
-            Console.WriteLine("22");
+            f1 = this;
+            g = this.CreateGraphics();
+            formThread = new Thread(new ThreadStart(Main));
+            formThread.Start();
         }
 
         public IntPtr id;
@@ -43,6 +45,7 @@ namespace AssaultCube__
 
             int initialStyle = (int)GetWindowLongPtr(this.Handle, -20);
             SetWindowLong32(this.Handle, -20, initialStyle | 0x80000 | 0x20);
+            this.TopMost = true;
 
             f = new Font("Times New Roman", 12.0f);
             b = new SolidBrush(Color.Orange);
@@ -51,7 +54,8 @@ namespace AssaultCube__
             {
                 updatewindow();
 
-                this.Invalidate();
+                f1.Refresh();
+                Draw();
                 Thread.Sleep(20);
             }
         }
@@ -93,16 +97,6 @@ namespace AssaultCube__
 
         }
 
-        [DllImport("user32.dll")]
-        public static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
-
-
-        [DllImport("user32.dll", EntryPoint = "SetWindowLong")]
-        private static extern int SetWindowLong32(IntPtr hWnd, int nIndex, int dwNewLong);
-
-        [DllImport("user32.dll", EntryPoint = "GetWindowLong")]
-        static extern IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex);
-
         private void InitializeComponent()
         {
             this.SuspendLayout();
@@ -119,30 +113,66 @@ namespace AssaultCube__
 
         private Font f;
         private SolidBrush b;
+        private Graphics g;
+        private Pen p = new Pen(Color.Green);
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            if (entities.entities.Count != 0)
+            e.Graphics.DrawString("Test test", f, b, new Point(Width / 2, Height / 2));
+
+        }
+
+        private void Draw()
+        {
+            g.Clear(tranparentcolor);
+            g.DrawString("Test test", f, b, new Point(Width/2, Height/2));
+
+            if (entities.entities.Count == 0)
                 return;
 
             int h = this.Height;
             int w = this.Width;
-            foreach (var ent in entities.entities)
+            try
             {
-                vector3 feet3 = new vector3 { x = ent.x, y = ent.y, z = ent.z }; 
-                Point feet = player.WorldToScreen(feet3, h, w);
-                vector3 head3 = new vector3 { x = ent.headx, y = ent.heady, z = ent.headz }; 
-                Point head = player.WorldToScreen(head3, h, w);
+                List<EntityList.Entity> ents = entities.entities.ToList();
+                foreach (var ent in ents)
+                {
+                    if (ent == null)
+                        continue;
 
-                e.Graphics.DrawString(ent.Name, f, b, head);
+                    vector3 feet3 = new vector3 { x = ent.x, y = ent.y, z = ent.z };
+                    Point feet = player.WorldToScreen(feet3, h, w);
+                    vector3 head3 = new vector3 { x = ent.headx, y = ent.heady, z = ent.headz };
+                    Point head = player.WorldToScreen(head3, h, w);
+
+                    if(feet.X > 0)
+                    {
+                        //g.DrawString(ent.Name, f, b, head);
+                        g.DrawLine(p, new Point(w / 2, h), feet);
+
+                    }
+                    g.DrawLine(p, new Point(w / 2, h), feet);
+                }
             }
+            catch (Exception e)
+            {
 
-
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            this.Show();
         }
+
+        [DllImport("user32.dll")]
+        public static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
+
+
+        [DllImport("user32.dll", EntryPoint = "SetWindowLong")]
+        private static extern int SetWindowLong32(IntPtr hWnd, int nIndex, int dwNewLong);
+
+        [DllImport("user32.dll", EntryPoint = "GetWindowLong")]
+        static extern IntPtr GetWindowLongPtr(IntPtr hWnd, int nIndex);
     }
 }
