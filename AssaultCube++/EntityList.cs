@@ -164,7 +164,9 @@ namespace AssaultCube__
             headx = 0x4;
             heady = 0x8;
             headz = 0xc;
-            viewMatrix = 0x00501AE8;
+            //viewMatrix = 0x00501AE8;
+            //viewMatrix = 0x17DFFC - 0x6C + 0x4 * 16;
+            viewMatrix = 0x501AE8;
         }
     }
 }

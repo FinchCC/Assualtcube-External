@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -25,7 +27,6 @@ namespace AssaultCube__
             CheckForIllegalCrossThreadCalls = false;
             FormHandler.form = this;
             f1 = this;
-            g = this.CreateGraphics();
             formThread = new Thread(new ThreadStart(Main));
             formThread.Start();
         }
@@ -47,14 +48,14 @@ namespace AssaultCube__
             SetWindowLong32(this.Handle, -20, initialStyle | 0x80000 | 0x20);
             this.TopMost = true;
 
-            f = new Font("Times New Roman", 12.0f);
-            b = new SolidBrush(Color.Orange);
+            this.ResizeRedraw = true;
+
 
             while (true)
             {
                 updatewindow();
 
-                f1.Refresh();
+                //f1.Refresh();
                 Draw();
                 Thread.Sleep(20);
             }
@@ -70,6 +71,7 @@ namespace AssaultCube__
             this.Height = wndRect.Bottom - wndRect.Top;
             this.Top = wndRect.Top;
             this.Left = wndRect.Left;
+            //g.Clip = new Region(new Rectangle(wndRect.Left, wndRect.Top, (wndRect.Right - wndRect.Left), (wndRect.Bottom - wndRect.Top)));
         }
 
         public struct Rect
@@ -103,7 +105,8 @@ namespace AssaultCube__
             // 
             // Form1
             // 
-            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.AutoSize = true;
+            this.ClientSize = new System.Drawing.Size(800, 400);
             this.Name = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
@@ -111,21 +114,21 @@ namespace AssaultCube__
 
         }
 
-        private Font f;
-        private SolidBrush b;
+        private Font f = new Font("Arial", 11);
+        private SolidBrush b = new SolidBrush(Color.Green);
         private Graphics g;
-        private Pen p = new Pen(Color.Green);
+        private Pen p = new Pen(Color.Yellow, 3f);
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            e.Graphics.DrawString("Test test", f, b, new Point(Width / 2, Height / 2));
-
+            
         }
 
         private void Draw()
         {
+            g = CreateGraphics();
             g.Clear(tranparentcolor);
-            g.DrawString("Test test", f, b, new Point(Width/2, Height/2));
+
 
             if (entities.entities.Count == 0)
                 return;
@@ -135,28 +138,42 @@ namespace AssaultCube__
             try
             {
                 List<EntityList.Entity> ents = entities.entities.ToList();
-                foreach (var ent in ents)
+                //foreach (var ent in ents)
+                //{
+                //    if (ent == null)
+                //        continue;
+
+                //    vector3 feet3 = new vector3 { x = ent.x, y = ent.y, z = ent.z };
+                //    Point feet = player.WorldToScreen(feet3, 1000, 800);
+                //    vector3 head3 = new vector3 { x = ent.headx, y = ent.heady, z = ent.headz };
+                //    Point head = player.WorldToScreen(head3, 1000, 800);
+
+                //    if(feet.X != -99 && feet.Y != -99)
+                //    {
+                //        Point toDraw = new Point(500, 400);
+                //        //g.DrawString(ent.Name, f, b, head);
+                //        g.DrawLine(p, toDraw, feet);
+
+                //    }
+                //g.DrawLine(p, new Point(w / 2, h), feet)
+
+                for (int i = 0; i < ents.Count; i++)
                 {
-                    if (ent == null)
+                    if (ents[i].Health < 0 || ents[i].Health > 100)
                         continue;
 
-                    vector3 feet3 = new vector3 { x = ent.x, y = ent.y, z = ent.z };
-                    Point feet = player.WorldToScreen(feet3, h, w);
-                    vector3 head3 = new vector3 { x = ent.headx, y = ent.heady, z = ent.headz };
-                    Point head = player.WorldToScreen(head3, h, w);
-
-                    if(feet.X > 0)
-                    {
-                        //g.DrawString(ent.Name, f, b, head);
-                        g.DrawLine(p, new Point(w / 2, h), feet);
-
-                    }
-                    g.DrawLine(p, new Point(w / 2, h), feet);
+                    var feetpos = new Vector3(ents[i].x, ents[i].y, ents[i].z);
+                    Vector2 feetInScreen = player.WorldToScreen(feetpos, w, h);
+                    Console.WriteLine("2d pos:" + ents[i].Name + " : " + feetInScreen.ToString());
+                    Point pScreen = PointToScreen(new Point((int)feetInScreen.X, (int)feetInScreen.Y));
+                    g.DrawLine(p, (w / 2), (h / 2), feetInScreen.X, feetInScreen.Y);
+                    g.DrawString(ents[i].Name, f, b, new Point((int)feetInScreen.X, (int)feetInScreen.Y));
                 }
+                
             }
             catch (Exception e)
             {
-
+                Console.WriteLine("Error: " + e.Message);
             }
         }
 

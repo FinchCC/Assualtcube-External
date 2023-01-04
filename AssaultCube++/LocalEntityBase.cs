@@ -158,10 +158,10 @@ namespace AssaultCube__
             return tempaddr;
         }
 
-        public Point WorldToScreen(vector3 position, int height, int width)
+        public Vector2 WorldToScreen(Vector3 position, int width, int height)
         {
 
-            var m = viewMatrix;
+
 
             //int Width = width;
             //int Height = height;
@@ -191,25 +191,114 @@ namespace AssaultCube__
             //}
 
 
+            var m = ReadMatrix(0x501AE8);
+            Point screenPos;
+            float screenX = (m.m11 * position.X) + (m.m21 * position.Y) + (m.m31 * position.Z) + m.m41;
+            float screenY = (m.m12 * position.X) + (m.m22 * position.Y) + (m.m32 * position.Z) + m.m42;
+            float screenZ = (m.m13 * position.X) + (m.m23 * position.Y) + (m.m33 * position.Z) + m.m43;
+            float w = position.X * m.m14 + position.Y * m.m24 + position.Z * m.m34 + m.m44;
 
-            float screenX = (m.M11 * position.x) + (m.M21 * position.y) + (m.M31 * position.z) + m.M41;
-            float screenY = (m.M12 * position.x) + (m.M22 * position.y) + (m.M32 * position.z) + m.M42;
-            float screenW = (m.M14 * position.x) + (m.M24 * position.y) + (m.M34 * position.z) + m.M44;
 
             //camera position (eye level/middle of screen)
             float camX = width / 2f;
             float camY = height / 2f;
+            float camZ = screenZ / w;
+
+            float x = camX + (camX * screenX / screenZ);
+            float y = camY - (camY * screenY / screenZ);
+
+            Vector2 v1 = new Vector2(camX, camY);
+
+            Vector2 v2;
+            bool s = m.WorldToScreen(position, width, height, out v1);
+
+            return v1;
 
             //convert to homogeneous position
-            float x = camX + (camX * screenX / screenW);
-            float y = camY - (camY * screenY / screenW);
-
-            Point screenPos = new Point((int)x, (int)y);
+            //float x = camX + (camX * screenX / screenW);
+            //float y = camY - (camY * screenY / screenW);
 
             //check if object is behind camera / off screen (not visible)
             //w = z where z is relative to the camera 
 
-            return screenPos;
+        }
+
+
+        public static Matrix ReadMatrix(int baseAddress)
+        {
+            //float matrix[16]; 16-value array laid out contiguously in memory       
+            byte[] buffer = new byte[16 * 4];
+
+            //read memory into buffer
+            int bytesRead;
+            Program.ReadProcessMemory((int)Program.pHandleOverlay, baseAddress, buffer, (int)buffer.Length, out bytesRead);
+
+            //convert bytes to floats
+            Matrix mat = new Matrix();
+            mat.m11 = BitConverter.ToSingle(buffer, (0 * 4));
+            mat.m12 = BitConverter.ToSingle(buffer, (1 * 4));
+            mat.m13 = BitConverter.ToSingle(buffer, (2 * 4));
+            mat.m14 = BitConverter.ToSingle(buffer, (3 * 4));
+
+            mat.m21 = BitConverter.ToSingle(buffer, (4 * 4));
+            mat.m22 = BitConverter.ToSingle(buffer, (5 * 4));
+            mat.m23 = BitConverter.ToSingle(buffer, (6 * 4));
+            mat.m24 = BitConverter.ToSingle(buffer, (7 * 4));
+
+            mat.m31 = BitConverter.ToSingle(buffer, (8 * 4));
+            mat.m32 = BitConverter.ToSingle(buffer, (9 * 4));
+            mat.m33 = BitConverter.ToSingle(buffer, (10 * 4));
+            mat.m34 = BitConverter.ToSingle(buffer, (11 * 4));
+
+            mat.m41 = BitConverter.ToSingle(buffer, (12 * 4));
+            mat.m42 = BitConverter.ToSingle(buffer, (13 * 4));
+            mat.m43 = BitConverter.ToSingle(buffer, (14 * 4));
+            mat.m44 = BitConverter.ToSingle(buffer, (15 * 4));
+            return mat;
+        }
+
+        public class Matrix
+        {
+            public float m11, m12, m13, m14; //00, 01, 02, 03
+            public float m21, m22, m23, m24; //04, 05, 06, 07
+            public float m31, m32, m33, m34; //08, 09, 10, 11
+            public float m41, m42, m43, m44; //12, 13, 14, 15
+
+
+            /// <summary>
+            /// Project a 3D position in world to a 2D position on the screen.
+            /// </summary>
+            /// <param name="worldPos">object's 3D position in world</param>
+            /// <param name="width">screen width</param>
+            /// <param name="height">screen height</param>
+            /// <param name="screenPos">object's 2D position on screen</param>
+            /// <returns>true if object is visible, false otherwise</returns>
+            public bool WorldToScreen(Vector3 worldPos, int width, int height, out Vector2 screenPos)
+            {
+
+                //multiply vector against matrix
+                float screenX = (m11 * worldPos.X) + (m21 * worldPos.Y) + (m31 * worldPos.Z) + m41;
+                float screenY = (m12 * worldPos.X) + (m22 * worldPos.Y) + (m32 * worldPos.Z) + m42;
+                float screenW = (m14 * worldPos.X) + (m24 * worldPos.Y) + (m34 * worldPos.Z) + m44;
+
+                //camera position (eye level/middle of screen)
+                float camX = width / 2f;
+                float camY = height / 2f;
+
+                //convert to homogeneous position
+                float x = camX + (camX * screenX / screenW);
+                float y = camY - (camY * screenY / screenW);
+                screenPos = new Vector2(x, y);
+
+                //check if object is behind camera / off screen (not visible)
+                //w = z where z is relative to the camera 
+                return (screenW > 0.001f);
+            }
+        }
+
+        public static bool IsValid(long address)
+        {
+            return (address >= 0x10000 && address < 0x000F000000000000);
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
