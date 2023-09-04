@@ -3,6 +3,6 @@ A external cheat created to learn about memory and pointers and how to read them
 A cheat engine table is also in the repo that includes pointers to the most important addr; like health ammo, position and player list.
 
 ### Features: ###
--ESP
+-ESP(key: q)
 -Aimbot
--SilentAim (somewhat)
+-SilentAim(key: c) (somewhat)
